@@ -1,6 +1,6 @@
 /* Simple example demonstrating #compile and #link directives */
 
-#compile obj "math_utils.c" "../build/math_utils.o"
+#compile obj "inc/math_utils.c" "../build/math_utils.o"
 #link obj "../build/math_utils.o"
 #binary exe "../bin/compile-test"
 
