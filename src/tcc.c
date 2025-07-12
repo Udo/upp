@@ -365,6 +365,8 @@ redo:
             if (tcc_add_library_err(s, f->name) < 0)
                 ret = 1;
         } else {
+            if (!first_file)
+                first_file = f->name;
             if (1 == s->verbose)
                 printf("-> %s\n", f->name);
             if (tcc_add_file(s, f->name) < 0)
