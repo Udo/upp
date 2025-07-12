@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "__node_handle": "cpp",
+        "random": "cpp"
+    }
+}

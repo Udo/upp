@@ -19,6 +19,7 @@
  */
 
 #include "tcc.h"
+#include "upp/prepass.h"
 #if ONE_SOURCE
 # include "libtcc.c"
 #endif
@@ -318,6 +319,43 @@ redo:
       || s->output_type == TCC_OUTPUT_PREPROCESS) && (s->dflag & 16))
         s->dflag |= t ? 32 : 0, s->run_test = ++t, n = s->nb_files;
 
+    /* Run UPP prepass on first source file before processing files */
+    {
+        upp_prepass_result_t *prepass = NULL;
+        for (int i = 0; i < s->nb_files; i++) {
+            struct filespec *f = s->files[i];
+            if (f->type != AFF_TYPE_LIB) {
+                /* Found first source file */
+                prepass = upp_prepass_parse_file(f->name);
+                if (prepass) {
+                    /* Store prepass parameters in compiler state */
+                    s->prepass_params = prepass->parameters;
+                    
+                    /* Set binary path if specified */
+                    if (prepass->binary_path && !s->binary_path) {
+                        s->binary_path = tcc_strdup(prepass->binary_path);
+                    }
+                    
+                    /* Apply command-line options from UPP parameters BEFORE processing files */
+                    if (s->verbose > 1) {
+                        printf("Applying UPP command-line options directly\n");
+                    }
+                    upp_prepass_apply_options(prepass, s);
+                    
+                    /* Print prepass info in verbose mode */
+                    if (s->verbose > 1) {
+                        upp_prepass_print_params(prepass);
+                    }
+                    
+                    /* Don't destroy parameters hashmap, but free the result structure */
+                    prepass->parameters = NULL; /* Transfer ownership */
+                    upp_prepass_result_destroy(prepass);
+                }
+                break;
+            }
+        }
+    }
+
     /* compile or add each files or library */
     for (first_file = NULL, ret = 0;;) {
         struct filespec *f = s->files[s->nb_files - n];
@@ -329,8 +367,6 @@ redo:
         } else {
             if (1 == s->verbose)
                 printf("-> %s\n", f->name);
-            if (!first_file)
-                first_file = f->name;
             if (tcc_add_file(s, f->name) < 0)
                 ret = 1;
         }

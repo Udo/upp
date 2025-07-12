@@ -82,6 +82,7 @@
      DEF(TOK_LINE, "line")
      DEF(TOK_PRAGMA, "pragma")
      DEF(TOK_BINARY, "binary")
+     DEF(TOK_PARAM, "param")
      DEF(TOK___LINE__, "__LINE__")
      DEF(TOK___FILE__, "__FILE__")
      DEF(TOK___DATE__, "__DATE__")

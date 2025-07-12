@@ -814,6 +814,7 @@ struct TCCState {
     int filetype;
     char *outfile; /* output filename */
     char *binary_path; /* path from #binary directive */
+    void *prepass_params; /* UPP prepass parameters (upp_hash_t*) */
     int option_r; /* option -r */
     int do_bench; /* option -bench */
     int gen_deps; /* option -MD  */

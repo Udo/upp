@@ -2040,6 +2040,12 @@ include_done:
             tcc_free(s1->binary_path);
         s1->binary_path = tcc_strdup(buf);
         break;
+    case TOK_PARAM:
+        /* #param directive for UPP - ignore during preprocessing since it's handled by prepass */
+        /* Just skip the rest of the line */
+        while (ch != '\n' && ch != CH_EOF)
+            inp();
+        break;
     case TOK_LINEFEED:
         goto the_end;
     default:

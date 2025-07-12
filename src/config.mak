@@ -12,7 +12,7 @@ GCC_MAJOR=14
 GCC_MINOR=2
 AR=ar
 STRIP=strip -s -R .comment -R .note
-CFLAGS=-Wall -g -O2 -Wdeclaration-after-statement -fno-strict-aliasing -Wno-pointer-sign -Wno-sign-compare -Wno-unused-result
+CFLAGS=-Wall -g -O2 -std=c99 -fno-strict-aliasing -Wno-pointer-sign -Wno-sign-compare -Wno-unused-result
 LDFLAGS=
 LIBSUF=.a
 EXESUF=
