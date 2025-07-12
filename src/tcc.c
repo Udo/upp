@@ -347,6 +347,29 @@ redo:
                         upp_prepass_print_params(prepass);
                     }
                     
+                    /* Process compile directives */
+                    if (prepass->compile_directives) {
+                        char compiler_path[1024];
+                        ssize_t len;
+                        /* Use the current executable path for spawning compiler processes */
+                        len = readlink("/proc/self/exe", compiler_path, sizeof(compiler_path) - 1);
+                        if (len != -1) {
+                            compiler_path[len] = '\0'; /* Null terminate */
+                            if (!upp_prepass_process_compile_directives(prepass, compiler_path)) {
+                                tcc_error("Failed to process compile directives");
+                            }
+                        } else {
+                            tcc_error("Failed to determine compiler path for compile directives");
+                        }
+                    }
+                    
+                    /* Process link directives */
+                    if (prepass->link_directives) {
+                        if (!upp_prepass_process_link_directives(s, prepass)) {
+                            tcc_error("Failed to process link directives");
+                        }
+                    }
+                    
                     /* Don't destroy parameters hashmap, but free the result structure */
                     prepass->parameters = NULL; /* Transfer ownership */
                     upp_prepass_result_destroy(prepass);

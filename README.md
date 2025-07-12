@@ -22,10 +22,8 @@ Fork of TCC (Tiny C Compiler) with UPP-specific build directives for Ultimate++ 
 ### Features
 
 - Parse source file directives before compilation
-- Store parameters in string-string hashmap
-- Apply compiler options from UPP parameters
-- Eliminate warnings for UPP directives
-- C99 compilation standard
+- The source file contains all the config/info necessary to produce the binary
+- Multi-line string support
 
 ### Build the compiler
 

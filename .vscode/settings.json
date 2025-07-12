@@ -2,6 +2,7 @@
     "files.associations": {
         "*.embeddedhtml": "html",
         "__node_handle": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "stdio.h": "c"
     }
 }

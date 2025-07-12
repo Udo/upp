@@ -2046,6 +2046,18 @@ include_done:
         while (ch != '\n' && ch != CH_EOF)
             inp();
         break;
+    case TOK_COMPILE:
+        /* #compile directive for UPP - ignore during preprocessing since it's handled by prepass */
+        /* Just skip the rest of the line */
+        while (ch != '\n' && ch != CH_EOF)
+            inp();
+        break;
+    case TOK_LINK:
+        /* #link directive for UPP - ignore during preprocessing since it's handled by prepass */
+        /* Just skip the rest of the line */
+        while (ch != '\n' && ch != CH_EOF)
+            inp();
+        break;
     case TOK_LINEFEED:
         goto the_end;
     default:
