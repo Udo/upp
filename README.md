@@ -37,6 +37,7 @@ Object files are automatically linked into the final executable.
 - The source file contains all the config/info necessary to produce the binary
 - Multi-line string support
 - **Automatic typedefs**: Named structs, enums, and unions automatically create corresponding typedefs
+- **Auto dot notation**: Use dot notation on struct pointers - automatically converts `ptr.member` to `ptr->member`
 
 #### Automatic Typedefs
 
@@ -54,6 +55,24 @@ Value v;                // Instead of: union Value v;
 ```
 
 See `examples/auto-typedef.c` for a complete example.
+
+#### Auto Dot Notation
+
+UPP allows dot notation on struct pointers:
+
+```c
+struct Point { int x, y; };
+Point* p = malloc(sizeof(Point));
+
+// Both of these work the same way:
+p.x = 10;    // Auto-converted to p->x = 10;
+p->y = 20;   // Traditional arrow notation
+
+// Also works with chained access:
+p.next.x = 30;    // Auto-converted to p->next->x = 30;
+```
+
+See `examples/auto-dotnotation.c` for a complete example.
 
 ### Build the compiler
 

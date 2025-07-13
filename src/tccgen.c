@@ -5130,8 +5130,16 @@ ST_FUNC void unary(void)
         } else if (tok == '.' || tok == TOK_ARROW || tok == TOK_CDOUBLE) {
             int qualifiers;
             /* field */ 
-            if (tok == TOK_ARROW) 
+            if (tok == TOK_ARROW) {
                 indir();
+            } else if (tok == '.') {
+                /* Check if this is a pointer to struct - if so, auto-dereference */
+                if ((vtop->type.t & VT_BTYPE) == VT_PTR && 
+                    vtop->type.ref && 
+                    (vtop->type.ref->type.t & VT_BTYPE) == VT_STRUCT) {
+                    indir();
+                }
+            }
             qualifiers = vtop->type.t & (VT_CONSTANT | VT_VOLATILE);
             test_lvalue();
             gaddrof();
