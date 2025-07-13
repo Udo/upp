@@ -36,6 +36,24 @@ Object files are automatically linked into the final executable.
 - Parse source file directives before compilation
 - The source file contains all the config/info necessary to produce the binary
 - Multi-line string support
+- **Automatic typedefs**: Named structs, enums, and unions automatically create corresponding typedefs
+
+#### Automatic Typedefs
+
+When you define a named struct, enum, or union, UPP automatically creates a typedef with the same name, allowing you to use the type without the `struct`/`enum`/`union` keyword:
+
+```c
+struct Point { int x, y; };        // Also creates: typedef struct Point Point;
+enum Color { RED, GREEN, BLUE };   // Also creates: typedef enum Color Color;  
+union Value { int i; float f; };   // Also creates: typedef union Value Value;
+
+// Now you can use them directly:
+Point p = {10, 20};     // Instead of: struct Point p = {10, 20};
+Color c = RED;          // Instead of: enum Color c = RED;
+Value v;                // Instead of: union Value v;
+```
+
+See `examples/auto-typedef.c` for a complete example.
 
 ### Build the compiler
 

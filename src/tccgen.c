@@ -3797,6 +3797,21 @@ static void struct_decl(CType *type, int u)
 do_decl:
     type->t = s->type.t;
     type->ref = s;
+    
+    /* Automatically create a typedef for named structs/unions/enums */
+    if (v != anon_sym - 1) { /* only for named (non-anonymous) types */
+        Sym *typedef_sym;
+        CType typedef_type;
+        
+        /* Check if typedef already exists to avoid redefinition */
+        typedef_sym = sym_find(v);
+        if (!typedef_sym || !(typedef_sym->type.t & VT_TYPEDEF)) {
+            /* Create the typedef */
+            typedef_type.t = s->type.t | VT_TYPEDEF;
+            typedef_type.ref = s;
+            typedef_sym = sym_push(v, &typedef_type, 0, 0);
+        }
+    }
 
     if (tok == '{') {
         next();
