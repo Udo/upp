@@ -1,6 +1,6 @@
-# UPP - Ultimate++ Preprocessor
+# UPP - Udo's Preprocessor Hacks for C
 
-Fork of TCC (Tiny C Compiler) with UPP-specific build directives for Ultimate++ framework.
+Fork of TCC (Tiny C Compiler).
 
 ## Changes
 
