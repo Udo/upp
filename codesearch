@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep -irn "$1" src/ examples/ 
