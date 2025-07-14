@@ -170,6 +170,8 @@ extern long double strtold (const char *__nptr, char **__endptr);
 # endif
 #endif
 
+#define CONFIG_TCC_BCHECK
+
 /* ------------ path configuration ------------ */
 
 #ifndef CONFIG_SYSROOT
@@ -269,8 +271,8 @@ extern long double strtold (const char *__nptr, char **__endptr);
 #endif
 
 /* (target specific) libtcc1.a */
-#ifndef TCC_LIBTCC1
-# define TCC_LIBTCC1 "libtcc1.a"
+#ifndef TCC_LIBUPP1
+# define TCC_LIBUPP1 "libupp1.a"
 #endif
 
 /* library to use with CONFIG_USE_LIBGCC instead of libtcc1.a */

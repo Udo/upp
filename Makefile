@@ -15,7 +15,7 @@ ifeq (-$(CC)-$(GCC_MAJOR)-$(findstring $(GCC_MINOR),56789)-,-gcc-4--)
 endif
 
 LIBTCC = build/libtcc.a
-LIBTCC1 = build/libtcc1.a
+LIBUPP1 = build/libupp1.a
 LINK_LIBTCC =
 LIBS =
 CFLAGS += -I$(TOP)/src
@@ -85,7 +85,7 @@ ifeq ($(INCLUDED),no)
 # running top Makefile
 
 PROGS = bin/upp$(EXESUF)
-TCCLIBS = $(LIBTCC1) $(LIBTCC) $(LIBTCCDEF)
+TCCLIBS = $(LIBUPP1) $(LIBTCC) $(LIBTCCDEF)
 TCCDOCS = src/tcc.1 src/tcc-doc.html src/tcc-doc.info
 
 all: $(PROGS) $(TCCLIBS) $(TCCDOCS)
@@ -94,17 +94,17 @@ all: $(PROGS) $(TCCLIBS) $(TCCDOCS)
 TCC_X = i386 x86_64 i386-win32 x86_64-win32 x86_64-osx arm arm64 arm-wince c67
 # TCC_X += arm-fpa arm-fpa-ld arm-vfp arm-eabi
 
-# cross libtcc1.a targets to build
-LIBTCC1_X = i386 x86_64 i386-win32 x86_64-win32 x86_64-osx arm arm64 arm-wince
+# cross libupp1.a targets to build
+LIBUPP1_X = i386 x86_64 i386-win32 x86_64-win32 x86_64-osx arm arm64 arm-wince
 
 PROGS_CROSS = $(foreach X,$(TCC_X),bin/$X-upp$(EXESUF))
-LIBTCC1_CROSS = $(foreach X,$(LIBTCC1_X),build/$X-libtcc1.a)
+LIBUPP1_CROSS = $(foreach X,$(LIBUPP1_X),build/$X-libupp1.a)
 
 # build cross compilers & libs
-cross: $(LIBTCC1_CROSS) $(PROGS_CROSS)
+cross: $(LIBUPP1_CROSS) $(PROGS_CROSS)
 
 # build specific cross compiler & lib
-cross-%: bin/%-upp$(EXESUF) build/%-libtcc1.a ;
+cross-%: bin/%-upp$(EXESUF) build/%-libupp1.a ;
 
 install: ; @$(MAKE) --no-print-directory install$(CFGWIN)
 install-strip: ; @$(MAKE) --no-print-directory install$(CFGWIN) CONFIG_strip=yes
@@ -144,10 +144,10 @@ DEFINES += $(DEF-$(or $(findstring win,$T),unx))
 
 ifneq ($(X),)
 ifeq ($(CONFIG_WIN32),yes)
-DEF-win += -DTCC_LIBTCC1="\"$(X)libtcc1.a\""
-DEF-unx += -DTCC_LIBTCC1="\"lib/$(X)libtcc1.a\""
+DEF-win += -DTCC_LIBUPP1="\"$(X)libupp1.a\""
+DEF-unx += -DTCC_LIBUPP1="\"lib/$(X)libupp1.a\""
 else
-DEF-all += -DTCC_LIBTCC1="\"$(X)libtcc1.a\""
+DEF-all += -DTCC_LIBUPP1="\"$(X)libupp1.a\""
 DEF-win += -DCONFIG_TCCDIR="\"$(tccdir)/win32\""
 endif
 endif
@@ -233,14 +233,14 @@ build/libtcc.def : build/libtcc.dll bin/upp$(EXESUF)
 XTCC ?= ./bin/upp$(EXESUF)
 
 # TinyCC runtime libraries
-build/libtcc1.a : bin/upp$(EXESUF) FORCE
+build/libupp1.a : bin/upp$(EXESUF) FORCE
 	@$(MAKE) -C src/lib DEFINES='$(DEF-$T)'
 
-# Cross libtcc1.a
-build/%-libtcc1.a : bin/%-upp$(EXESUF) FORCE
+# Cross libupp1.a
+build/%-libupp1.a : bin/%-upp$(EXESUF) FORCE
 	@$(MAKE) -C src/lib DEFINES='$(DEF-$*)' CROSS_TARGET=$*
 
-.PRECIOUS: build/%-libtcc1.a
+.PRECIOUS: build/%-libupp1.a
 FORCE:
 
 # --------------------------------------------------------------------------
@@ -263,8 +263,8 @@ INSTALL = install -m644
 INSTALLBIN = install -m755 $(STRIP_$(CONFIG_strip))
 STRIP_yes = -s
 
-LIBTCC1_W = $(filter %-win32-libtcc1.a %-wince-libtcc1.a,$(LIBTCC1_CROSS))
-LIBTCC1_U = $(filter-out $(LIBTCC1_W),$(LIBTCC1_CROSS))
+LIBUPP1_W = $(filter %-win32-libupp1.a %-wince-libupp1.a,$(LIBUPP1_CROSS))
+LIBUPP1_U = $(filter-out $(LIBUPP1_W),$(LIBUPP1_CROSS))
 IB = $(if $1,mkdir -p $2 && $(INSTALLBIN) $1 $2)
 IBw = $(call IB,$(wildcard $1),$2)
 IF = $(if $1,mkdir -p $2 && $(INSTALL) $1 $2)
@@ -274,15 +274,15 @@ IR = mkdir -p $2 && cp -r $1/. $2
 # install progs & libs
 install-unx:
 	$(call IBw,$(PROGS) $(PROGS_CROSS),"$(bindir)")
-	$(call IFw,$(LIBTCC1) $(LIBTCC1_U),"$(tccdir)")
+	$(call IFw,$(LIBUPP1) $(LIBUPP1_U),"$(tccdir)")
 	$(call IF,$(TOPSRC)/src/include/*.h $(TOPSRC)/src/tcclib.h,"$(tccdir)/include")
 	$(call $(if $(findstring .so,$(LIBTCC)),IBw,IFw),$(LIBTCC),"$(libdir)")
 	$(call IF,$(TOPSRC)/src/libtcc.h,"$(includedir)")
 	$(call IFw,src/tcc.1,"$(mandir)/man1")
 	$(call IFw,src/tcc-doc.info,"$(infodir)")
 	$(call IFw,src/tcc-doc.html,"$(docdir)")
-ifneq "$(wildcard $(LIBTCC1_W))" ""
-	$(call IFw,$(TOPSRC)/src/win32/lib/*.def $(LIBTCC1_W),"$(tccdir)/win32/lib")
+ifneq "$(wildcard $(LIBUPP1_W))" ""
+	$(call IFw,$(TOPSRC)/src/win32/lib/*.def $(LIBUPP1_W),"$(tccdir)/win32/lib")
 	$(call IR,$(TOPSRC)/src/win32/include,"$(tccdir)/win32/include")
 	$(call IF,$(TOPSRC)/src/include/*.h $(TOPSRC)/src/tcclib.h,"$(tccdir)/win32/include")
 endif
@@ -299,15 +299,15 @@ uninstall-unx:
 install-win:
 	$(call IBw,$(PROGS) $(PROGS_CROSS) $(subst libtcc.a,,$(LIBTCC)),"$(bindir)")
 	$(call IF,$(TOPSRC)/src/win32/lib/*.def,"$(tccdir)/lib")
-	$(call IFw,build/libtcc1.a $(LIBTCC1_W),"$(tccdir)/lib")
+	$(call IFw,build/libupp1.a $(LIBUPP1_W),"$(tccdir)/lib")
 	$(call IF,$(TOPSRC)/src/include/*.h $(TOPSRC)/src/tcclib.h,"$(tccdir)/include")
 	$(call IR,$(TOPSRC)/src/win32/include,"$(tccdir)/include")
 	$(call IR,$(TOPSRC)/src/win32/examples,"$(tccdir)/examples")
 	$(call IF,$(TOPSRC)/src/tests/libtcc_test.c,"$(tccdir)/examples")
 	$(call IFw,$(TOPSRC)/src/libtcc.h $(subst .dll,.def,$(LIBTCC)),"$(libdir)")
 	$(call IFw,$(TOPSRC)/src/win32/tcc-win32.txt src/tcc-doc.html,"$(docdir)")
-ifneq "$(wildcard $(LIBTCC1_U))" ""
-	$(call IFw,$(LIBTCC1_U),"$(tccdir)/lib")
+ifneq "$(wildcard $(LIBUPP1_U))" ""
+	$(call IFw,$(LIBUPP1_U),"$(tccdir)/lib")
 	$(call IF,$(TOPSRC)/src/include/*.h $(TOPSRC)/src/tcclib.h,"$(tccdir)/lib/include")
 endif
 

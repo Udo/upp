@@ -5098,7 +5098,8 @@ ST_FUNC void unary(void)
                 || (name[0] >= 'A' && name[0] <= 'Z')
 #endif
             )
-                tcc_warning("implicit declaration of function '%s'", name);
+                //tcc_warning("implicit declaration of function '%s'", name);
+                tcc_error("undeclared '%s'", name);
             s = external_global_sym(t, &func_old_type, 0); 
         }
 

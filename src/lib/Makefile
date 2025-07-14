@@ -1,5 +1,5 @@
 #
-# Tiny C Compiler Makefile for libtcc1.a
+# Tiny C Compiler Makefile for libupp1.a
 #
 
 TOP = ../..
@@ -7,7 +7,7 @@ include $(TOP)/Makefile
 VPATH = $(TOPSRC)/src/lib $(TOPSRC)/src/win32/lib
 T = $(or $(CROSS_TARGET),$(NATIVE_TARGET),unknown)
 X = $(if $(CROSS_TARGET),$(CROSS_TARGET)-)
-BIN = $(TOP)/build/$(X)libtcc1.a
+BIN = $(TOP)/build/$(X)libupp1.a
 
 XTCC ?= $(TOP)/bin/$(X)upp$(EXESUF)
 XCC = $(XTCC)
@@ -17,17 +17,17 @@ XFLAGS-win = -B$(TOPSRC)/src/win32 -I$(TOPSRC)/src/include
 XFLAGS = $(XFLAGS$(XCFG))
 XCFG = $(or $(findstring -win,$T),-unx)
 
-# in order to use gcc, tyoe: make <target>-libtcc1-usegcc=yes
-arm-libtcc1-usegcc ?= no
+# in order to use gcc, type: make <target>-libupp1-usegcc=yes
+arm-libupp1-usegcc ?= no
 
-ifeq "$($(T)-libtcc1-usegcc)" "yes"
+ifeq "$($(T)-libupp1-usegcc)" "yes"
  XCC = $(CC)
  XAR = $(AR)
  XFLAGS = $(CFLAGS) -fPIC
 endif
 
 # only for native compiler
-BCHECK_O = 
+BCHECK_O = bcheck.o
 
 ifeq ($(CONFIG_musl)$(CONFIG_uClibc),yes)
  BCHECK_O =
@@ -37,9 +37,9 @@ ifdef CONFIG_OSX
  XFLAGS += -D_ANSI_SOURCE
 endif
 
-I386_O = libtcc1.o alloca86.o alloca86-bt.o
-X86_64_O = libtcc1.o alloca86_64.o alloca86_64-bt.o
-ARM_O = libtcc1.o armeabi.o alloca-arm.o armflush.o
+I386_O = libupp1.o alloca86.o alloca86-bt.o
+X86_64_O = libupp1.o alloca86_64.o alloca86_64-bt.o
+ARM_O = libupp1.o armeabi.o alloca-arm.o armflush.o
 ARM64_O = lib-arm64.o
 WIN_O = crt1.o crt1w.o wincrt1.o wincrt1w.o dllcrt1.o dllmain.o
 
@@ -63,6 +63,10 @@ $(BIN) : $(patsubst %.o,$(TOP)/build/$(X)%.o,$(OBJ-$T))
 $(TOP)/build/$(X)%.o : %.c
 	@mkdir -p $(TOP)/build
 	$(XCC) -c $< -o $@ $(XFLAGS)
+
+$(TOP)/build/$(X)bcheck.o : bcheck.c
+	@mkdir -p $(TOP)/build
+	$(XCC) -c $< -o $@ $(XFLAGS) -D__FreeBSD__
 
 $(TOP)/build/$(X)%.o : %.S
 	@mkdir -p $(TOP)/build

@@ -1870,7 +1870,7 @@ static void pe_add_runtime(TCCState *s1, struct pe_info *pe)
 
     if (0 == s1->nostdlib) {
         static const char *libs[] = {
-            TCC_LIBTCC1, "msvcrt", "kernel32", "", "user32", "gdi32", NULL
+            TCC_LIBUPP1, "msvcrt", "kernel32", "", "user32", "gdi32", NULL
         };
         const char **pp, *p;
         for (pp = libs; 0 != (p = *pp); ++pp) {

@@ -1677,6 +1677,10 @@ PUB_FUNC int tcc_parse_args(TCCState *s, int *pargc, char ***pargv, int optind)
 
     cstr_new(&linker_arg);
 
+    // hard defaults
+    s->do_bounds_check = 1;
+    s->do_debug = 1;
+
     while (optind < argc) {
         r = argv[optind];
         if (r[0] == '@' && r[1] != '\0') {
