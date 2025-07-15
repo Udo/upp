@@ -27,7 +27,8 @@ ifeq "$($(T)-libupp1-usegcc)" "yes"
 endif
 
 # only for native compiler
-BCHECK_O = bcheck.o
+# Temporarily disable bcheck to test forward references
+BCHECK_O =
 
 ifeq ($(CONFIG_musl)$(CONFIG_uClibc),yes)
  BCHECK_O =
@@ -66,7 +67,8 @@ $(TOP)/build/$(X)%.o : %.c
 
 $(TOP)/build/$(X)bcheck.o : bcheck.c
 	@mkdir -p $(TOP)/build
-	$(XCC) -c $< -o $@ $(XFLAGS) -D__FreeBSD__
+	# Temporarily disabled to test forward references
+	# $(XCC) -c $< -o $@ $(XFLAGS) -D__FreeBSD__
 
 $(TOP)/build/$(X)%.o : %.S
 	@mkdir -p $(TOP)/build

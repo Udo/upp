@@ -5086,21 +5086,26 @@ ST_FUNC void unary(void)
             expect("identifier");
         s = sym_find(t);
         if (!s || IS_ASM_SYM(s)) {
-            const char *name = get_tok_str(t, NULL);
-            if (tok != '(')
-                tcc_error("'%s' undeclared", name);
-            /* for simple function calls, we tolerate undeclared
-               external reference to int() function */
-            if (tcc_state->warn_implicit_function_declaration
-#ifdef TCC_TARGET_PE
-                /* people must be warned about using undeclared WINAPI functions
-                   (which usually start with uppercase letter) */
-                || (name[0] >= 'A' && name[0] <= 'Z')
-#endif
-            )
-                //tcc_warning("implicit declaration of function '%s'", name);
-                tcc_error("undeclared '%s'", name);
-            s = external_global_sym(t, &func_old_type, 0); 
+            if (tok == '(') {
+                /* Function call - create function forward reference */
+                s = external_global_sym(t, &func_old_type, 0);
+            } else if (tok == '=' || (tok >= TOK_A_SHL && tok <= TOK_A_XOR)) {
+                /* Assignment - create forward variable reference with int type */
+                s = global_identifier_push(t, VT_INT | VT_EXTERN, 0);
+                s->r = VT_CONST | VT_SYM;
+            } else if (tok == '.' || tok == TOK_ARROW) {
+                /* Member access - create forward struct reference */
+                s = global_identifier_push(t, VT_STRUCT | VT_EXTERN, 0);
+                s->r = VT_CONST | VT_SYM;
+            } else if (tok == '[') {
+                /* Array access - create forward array reference */
+                s = global_identifier_push(t, VT_ARRAY | VT_INT | VT_EXTERN, 0);
+                s->r = VT_CONST | VT_SYM;
+            } else {
+                /* Other usage - create forward reference */
+                s = global_identifier_push(t, VT_INT | VT_EXTERN, 0);
+                s->r = VT_CONST | VT_SYM;
+            }
         }
 
         r = s->r;
